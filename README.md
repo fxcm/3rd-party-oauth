@@ -10,5 +10,5 @@ The 3rd party OAUTH authentication model solves this problem by allowing the 3rd
 
 This document outlines the steps a 3rd party should take in order to integrate with the OAUTH authentication model, as well as provide instructions to access and run sample a sample front end application.
 
-For detail, please refer to insturctions 3rdPartyOAUTH.docx
+For detail, please refer to insturctions [3rdPartyOAUTH.docx](https://github.com/fxcm/3rd-party-oauth/blob/master/3rdPartyOAUTH.docx)
 
