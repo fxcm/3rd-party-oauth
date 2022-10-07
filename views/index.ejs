@@ -7,17 +7,19 @@
     <title>FXCM OAUTH DEMO</title>
 </head>
 <body>
-    
-    <% if (access_token) { %>
-        <p>Access Token: <%= access_token %></p>
-        <h2><a href="logout">Log Out</a></h2>
-    <% } else { %>
-        <div id="login-links">
-            <h4><a href="/authorize?response_type=code">Sign in with FXCM (Authorization Code)</a></h4>
-            <h4><a id="login" href="#">Sign in with FXCM (Authorization Code With PKCE)</a></h4>
-        </div>
-    <% } %>
 
-    <script src="/js/pkce.js"></script>
+<% if (access_token) { %>
+    <p>Access Token: <%= access_token %></p>
+    <p>Refresh Token: <%= refresh_token %></p>
+    <div id="login-links">
+        <h4><a href="/refresh">Refresh Token</a></h4>
+    </div>
+<% } else { %>
+    <div id="login-links">
+        <h4><a href="/authorize?response_type=code">Sign in with FXCM</a></h4>
+    </div>
+<% } %>
+
+<script src="/js/pkce.js"></script>
 </body>
 </html>
