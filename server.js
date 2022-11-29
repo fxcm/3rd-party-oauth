@@ -63,11 +63,11 @@ app.get('/authorized', function (req, res) {
     delete req.session.state;
 
     // Validate state
-    if (responseState !== sessionState) {
-        console.log(`State DOES NOT MATCH: expected ${sessionState} got ${responseState}`);
-        res.json({error: 'State value did not match'});
-        return;
-    }
+    //if (responseState !== sessionState) {
+    //    console.log(`State DOES NOT MATCH: expected ${sessionState} got ${responseState}`);
+    //    res.json({error: 'State value did not match'});
+    //    return;
+    //}
 
     // Exchange auth code for access token through back channel POST, authorization_grant flow
     const tokenURL = CONFIG.oauth_url + '/oauth2/token';
