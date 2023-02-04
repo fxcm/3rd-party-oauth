@@ -3,5 +3,6 @@
     "client_id": "YourClientID",
     "client_secret": "your-client-secret",
     "oauth_url": "https://fxcm-environment-specific.com",
-    "redirect_url": "YourRedirectURL"
+    "redirect_url": "YourRedirectURL",
+    "redirect_logout_url": "YourLogoutRedirectURL"
 }
