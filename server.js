@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-const randomstring = require('randomstring');
 const querystring = require('querystring');
 const session = require('express-session');
 const express = require('express');
@@ -21,6 +20,11 @@ app.use(session({
     saveUninitialized: true
 }));
 
+axios.interceptors.request.use(request => {
+    console.log(JSON.stringify(request, null, 2))
+    return request
+})
+
 app.get('/config', function (req, res) {
     res.json({
         client_id: CONFIG.client_id,
@@ -30,7 +34,6 @@ app.get('/config', function (req, res) {
 
 
 app.get('/authorize', function (req, res) {
-    let state = randomstring.generate();
     const url = new URL(CONFIG.oauth_url);
     const clientId = CONFIG.client_id;
     const redirectURL = CONFIG.redirect_url;
@@ -40,9 +43,7 @@ app.get('/authorize', function (req, res) {
     url.searchParams.set('scope', 'openid trading');
     url.searchParams.set('client_id', clientId);
     url.searchParams.set('redirect_uri', redirectURL);
-    url.searchParams.set('state', state);
 
-    req.session.state = state;
     res.redirect(url.toString());
 });
 
@@ -55,20 +56,6 @@ app.get('/authorized', function (req, res) {
         return;
     }
 
-    // State values from query and session
-    const responseState = req.query.state;
-    const sessionState = req.session.state;
-
-    // Delete temporary state
-    delete req.session.state;
-
-    // Validate state
-    //if (responseState !== sessionState) {
-    //    console.log(`State DOES NOT MATCH: expected ${sessionState} got ${responseState}`);
-    //    res.json({error: 'State value did not match'});
-    //    return;
-    //}
-
     // Exchange auth code for access token through back channel POST, authorization_grant flow
     const tokenURL = CONFIG.oauth_url + '/oauth2/token';
     let postBody = {
@@ -80,28 +67,32 @@ app.get('/authorized', function (req, res) {
     };
 
     axios.request({
+        withCredentials: true,
         method: 'POST',
         url: tokenURL,
         data: querystring.stringify(postBody)
     }).then(function (result) {
-        console.log(result.data);
+        console.log(result);
         req.session.access_token = result.data.access_token;
         req.session.refresh_token = result.data.refresh_token;
         res.redirect('/');
     }).catch(function (err) {
+        req.session.access_token = null;
+        req.session.refresh_token = null;
         res.json({error: err})
     });
 });
 
 
 app.get('/logout', function (req, res) {
-    req.session.destroy(function () {
-        res.redirect('/')
-    });
+    const url = new URL(CONFIG.oauth_url);
+    url.pathname = '/oauth2/logout';
+    url.searchParams.set('client_id', CONFIG.client_id);
+    url.searchParams.set('redirect_uri', CONFIG.redirect_logout_url);
+    res.redirect(url.toString());
 });
 
 app.get('/refresh', function (req, res) {
-    // Exchange auth code for access token through back channel POST, authorization_grant flow
     const tokenURL = CONFIG.oauth_url + '/oauth2/token';
     let postBody = {
         grant_type: 'refresh_token',
@@ -112,18 +103,19 @@ app.get('/refresh', function (req, res) {
     };
 
     axios.request({
+        withCredentials: true,
         method: 'POST',
         url: tokenURL,
         data: querystring.stringify(postBody)
     }).then(function (result) {
-        console.log(result.data);
+        console.log(result);
         req.session.access_token = result.data.access_token;
         req.session.refresh_token = result.data.refresh_token;
         res.redirect('/');
     }).catch(function (err) {
         res.json({error: err})
     });
-});
+})
 
 app.get('/', function (req, res) {
     res.render('index', {access_token: req.session.access_token, refresh_token: req.session.refresh_token});
