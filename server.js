@@ -43,7 +43,7 @@ app.get('/authorize', function (req, res) {
     url.searchParams.set('scope', 'openid trading');
     url.searchParams.set('client_id', clientId);
     url.searchParams.set('redirect_uri', redirectURL);
-
+    console.log(url.toString())
     res.redirect(url.toString());
 });
 
@@ -77,9 +77,8 @@ app.get('/authorized', function (req, res) {
         req.session.refresh_token = result.data.refresh_token;
         res.redirect('/');
     }).catch(function (err) {
-        req.session.access_token = null;
-        req.session.refresh_token = null;
-        res.json({error: err})
+        console.log("ERROR:: " + err);
+        res.redirect("/");
     });
 });
 
@@ -89,6 +88,7 @@ app.get('/logout', function (req, res) {
     url.pathname = '/oauth2/logout';
     url.searchParams.set('client_id', CONFIG.client_id);
     url.searchParams.set('redirect_uri', CONFIG.redirect_logout_url);
+    url.searchParams.set('refresh_token', req.session.refresh_token);
     res.redirect(url.toString());
 });
 
@@ -113,7 +113,8 @@ app.get('/refresh', function (req, res) {
         req.session.refresh_token = result.data.refresh_token;
         res.redirect('/');
     }).catch(function (err) {
-        res.json({error: err})
+        console.log("ERROR:: " + err);
+        res.redirect("/");
     });
 })
 
