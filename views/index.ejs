@@ -5,19 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>FXCM OAUTH DEMO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        min-height: 100%;
+        background-color: white;
+        font-family: Roboto, sans-serif;
+        font-size: 1rem;
+        color: #131314;
+    }
+
+    span {
+        word-wrap: break-word;
+    }
+</style>
 <body>
-    
+
+<div class="container">
     <% if (access_token) { %>
-        <p>Access Token: <%= access_token %></p>
-        <h2><a href="logout">Log Out</a></h2>
+        <div class="row py-2">
+            <span class="fw-semibold text-primary">Access Token:</span>
+            <span class="fw-semibold"><%= access_token %></span>
+        </div>
+
+        <div class="row">
+            <span class="fw-semibold text-primary">Refresh Token:</span>
+            <span class="fw-semibold"><%= refresh_token %></span>
+        </div>
+
+        <div class="row py-2" id="refresh-links">
+            <h4><a href="/refresh">Refresh Token</a></h4>
+        </div>
+
+        <div class="row py-2" id="revoke-links">
+            <h4><a href="/logout">Logout</a></h4>
+        </div>
     <% } else { %>
-        <div id="login-links">
-            <h4><a href="/authorize?response_type=code">Sign in with FXCM (Authorization Code)</a></h4>
-            <h4><a id="login" href="#">Sign in with FXCM (Authorization Code With PKCE)</a></h4>
+        <div class="row py-2" id="login-links" align="center">
+            <h4><a href="/authorize?response_type=code">Sign in with FXCM</a></h4>
         </div>
     <% } %>
+</div>
 
-    <script src="/js/pkce.js"></script>
 </body>
 </html>
